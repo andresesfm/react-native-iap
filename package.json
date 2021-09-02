@@ -1,5 +1,5 @@
 {
-  "name": "@andresesfm/react-native-iap",
+  "name": "@iap.dev/react-native-iap",
   "version": "7.3.0",
   "description": "React Native In App Purchase Module.",
   "main": "index.js",
