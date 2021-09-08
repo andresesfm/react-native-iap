@@ -22,11 +22,9 @@ Published in [website](https://react-native-iap.dooboolab.com).
 
 This is a fork of https://github.com/dooboolab/react-native-iap. The binary is published to https://www.npmjs.com/package/@iap.dev/react-native-iap
 
-React Native IAP hook is out. You can see [medium post](https://medium.com/dooboolab/announcing-react-native-iap-hooks-96c7ffd3f19a) on how to use it.
+# Changes
 
-The `react-native-iap` module hasn't been maintained well recently. We are thinking of participating again and make the module healthier. Please refer to [2021 Maintenance plan](https://github.com/dooboolab/react-native-iap/issues/1241) and share with us how you or your organization is using it. Happy new year 🎉
-- The sample code is out in [Sponsor page](https://github.com/hyochan/dooboolab.com/blob/master/src/components/pages/Sponsor.tsx) in [dooboolab.com](https://github.com/hyochan/dooboolab.com) repository which sadly is rejected by Apple because of lacking product features. I will work on another example project to support this module. More information in [#1241 commment](https://github.com/dooboolab/react-native-iap/issues/1241#issuecomment-798540785).
-
+If you are implementing promoted products. Seee the updated FAQ
 ## Introduction
 
 This react-native module will help you access the In-app purchases capabilities of your phone on the `Android`, `iOS` platforms and the `Amazon` platform (Beta).

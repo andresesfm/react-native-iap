@@ -67,11 +67,29 @@
 
 ### How do I handle promoted products in iOS?
 - Offical doc is [here](https://developer.apple.com/app-store/promoting-in-app-purchases/).
-- No initial setup needed from `4.4.5`.
+Add the following to your `AppDelegate`. This will store the parameters and excecute the logic 
+```swift
+import UIKit
+import StoreKit
 
-Somewhere early in your app's lifecycle,
-call `initConnection` first (see above), then
-add a listener for the `iap-promoted-product` event:
+class AppDelegate: UIResponder, UIApplicationDelegate {
+                ....
+    // Attach an observer to the payment queue.
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+        SKPaymentQueue.default().add(RNIapQueue.shared)
+        return true
+    }
+
+    // Called when the application is about to terminate.
+    func applicationWillTerminate(_ application: UIApplication) {
+        // Remove the observer.
+        SKPaymentQueue.default().remove(RNIapQueue.shared)
+    }
+                ....
+}```
+
+
+Somewhere early in your app's lifecycle, add a listener for the `iap-promoted-product` event:
 
   ```javascript
   import { NativeModules, NativeEventEmitter } from 'react-native'
@@ -90,7 +108,7 @@ add a listener for the `iap-promoted-product` event:
     }
   });
   ```
-
+Then call  `initConnection` (see above)
 
 ### Using Face ID & Touch to checkout on iOS
 - After you have completed the setup and set your deployment target to `iOS 12`,
