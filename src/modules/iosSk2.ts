@@ -102,3 +102,16 @@ export const beginRefundRequest = (sku: string): Promise<RefundRequestStatus> =>
  */
 export const showManageSubscriptions = (): Promise<null> =>
   RNIapIosSk2.showManageSubscriptions();
+
+/**
+ *
+ */
+export const getAvailableItems: getAvailableItems = (
+  alsoPublishToEventListener,
+  onlyIncludeActiveItems,
+) => {
+  return RNIapIosSk2.getAvailableItems(
+    alsoPublishToEventListener,
+    onlyIncludeActiveItems,
+  );
+};
