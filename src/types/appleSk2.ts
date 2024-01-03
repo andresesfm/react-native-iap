@@ -7,7 +7,7 @@ import type {
   SubscriptionIosPeriod,
 } from '.';
 import type * as Apple from './apple';
-import {SubscriptionPlatform} from '.';
+import {SubscriptionPlatform} from './';
 
 export type SubscriptionPeriod = {
   unit: 'day' | 'week' | 'month' | 'year';
@@ -36,6 +36,7 @@ export type SubscriptionInfo = {
 export type RefundRequestStatus = 'success' | 'userCancelled';
 
 export type ProductSk2 = {
+  currency: string;
   description: string;
   displayName: string;
   displayPrice: string;
@@ -51,6 +52,7 @@ export const productSk2Map = ({
   description,
   displayName,
   price,
+  currency,
   displayPrice,
 }: ProductSk2): ProductIOS => {
   const prod: ProductIOS = {
@@ -60,7 +62,7 @@ export const productSk2Map = ({
     type: 'iap',
     price: String(price),
     localizedPrice: displayPrice,
-    currency: '', // Not available on new API, use localizedPrice instead
+    currency,
   };
   return prod;
 };
@@ -70,6 +72,7 @@ export const subscriptionSk2Map = ({
   description,
   displayName,
   price,
+  currency,
   displayPrice,
   subscription,
 }: ProductSk2): SubscriptionIOS => {
@@ -81,10 +84,21 @@ export const subscriptionSk2Map = ({
     type: 'subs',
     price: String(price),
     localizedPrice: displayPrice,
-    currency: '', // Not available on new API, use localizedPrice instead
+    currency,
     subscriptionPeriodNumberIOS: `${subscription?.subscriptionPeriod?.value}`,
     subscriptionPeriodUnitIOS:
       subscription?.subscriptionPeriod?.unit.toUpperCase() as SubscriptionIosPeriod,
+    introductoryPriceAsAmountIOS: subscription?.introductoryOffer?.displayPrice,
+    introductoryPricePaymentModeIOS:
+      subscription?.introductoryOffer?.paymentMode.toUpperCase() as
+        | ''
+        | 'FREETRIAL'
+        | 'PAYASYOUGO'
+        | 'PAYUPFRONT',
+    introductoryPriceNumberOfPeriodsIOS:
+      subscription?.introductoryOffer?.period?.value?.toString(),
+    introductoryPriceSubscriptionPeriodIOS: subscription?.introductoryOffer
+      ?.period?.unit as SubscriptionIosPeriod,
   };
   return prod;
 };
@@ -134,8 +148,22 @@ export type SubscriptionStatus =
   | 'revoked'
   | 'subscribed';
 
+/**
+ * Renewal info for whole subscription group.
+ * see: https://developer.apple.com/documentation/storekit/product/subscriptioninfo/status/3822294-renewalinfo
+ * WARN:
+ * - autoRenewPreference is serialised as autoRenewProductId in jsonRepresentation
+ * - renewalDate is available in jsonRepresentation (will change with Xcode 15 https://developer.apple.com/forums/thread/738833)
+ */
+export type RenewalInfo = {
+  jsonRepresentation?: string;
+  willAutoRenew: boolean;
+  autoRenewPreference?: string;
+};
+
 export type ProductStatus = {
   state: SubscriptionStatus;
+  renewalInfo?: RenewalInfo;
 };
 
 export const transactionSk2ToPurchaseMap = ({
@@ -146,8 +174,19 @@ export const transactionSk2ToPurchaseMap = ({
   purchasedQuantity,
   originalID,
   verificationResult,
-  appAccountToken
+  appAccountToken,
+  jsonRepresentation,
 }: TransactionSk2): Purchase => {
+  let transactionReasonIOS;
+  try {
+    const transactionData = JSON.parse(jsonRepresentation);
+    transactionReasonIOS = transactionData.transactionReason;
+  } catch (e) {
+    console.log(
+      'AppleSK2.ts react-native-iap: Error parsing jsonRepresentation',
+      e,
+    );
+  }
   const purchase: Purchase = {
     productId: productID,
     transactionId: String(id),
@@ -159,6 +198,7 @@ export const transactionSk2ToPurchaseMap = ({
     originalTransactionIdentifierIOS: originalID,
     verificationResultIOS: verificationResult ?? '',
     appAccountToken: appAccountToken ?? '',
+    transactionReasonIOS: transactionReasonIOS ?? '',
   };
   return purchase;
 };
