@@ -115,3 +115,10 @@ export const getAvailableItems: getAvailableItems = (
     onlyIncludeActiveItems,
   );
 };
+
+/**
+ *
+ */
+export const getItems: getItems = (skus: Sku[]) => {
+  return RNIapIosSk2.getItems(skus);
+};
