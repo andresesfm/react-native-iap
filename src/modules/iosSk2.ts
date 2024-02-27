@@ -122,3 +122,6 @@ export const getAvailableItems: getAvailableItems = (
 export const getItems: getItems = (skus: Sku[]) => {
   return RNIapIosSk2.getItems(skus);
 };
+export const finishTransaction = (
+  transactionIdentifier: string,
+): Promise<Boolean> => RNIapIosSk2.finishTransaction(transactionIdentifier);
